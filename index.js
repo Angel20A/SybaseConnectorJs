@@ -3,7 +3,7 @@ import https from "https";
 import fs from "fs";
 import path from "path";
 
-const Connstring = "data source=c:\\Users\\HP\\Documents\\Angel\\SDG\\Sybase\\Data;ServerType=local;CharType=ansi;TableType=ADT;";
+const Connstring = "data source=c:\\Users\\HP\\Documents\\Angel\\SDG\\Sybase\\Data;ServerType=local;CharType=general_vfp_ci_as_1252;TableType=ADT;";
 const agent = new https.Agent({
     rejectUnauthorized: false
 });
@@ -43,14 +43,7 @@ function getUsersId (id){
 
 async function postUser (PkData, CardNumberFormatted, Username, Email, PicturePath){
     try{
-        /*const imagePath = "C:/Users/HP/Downloads/userprofile3.jpg";
-        console.log(imagePath);
-        const imageBuffer = fs.readFileSync(imagePath).toString("base64");
-        console.log("imagen a byte:" + imageBuffer);*/
-        
-
-        //const Localquery = `insert into Card (PkData, CardNumberFormatted, UserName, Email, Picture) values (77, '0000:22075', 'Seven User', 'seven@user.com', ${imageBuffer}`;
-        //const pictureRoute = path.join(__dirname, PicturePath);
+        console.log(PkData + ", " + CardNumberFormatted + ", " + Username + ", " + Email + ", " + PicturePath);
         const Picture = fs.readFileSync(PicturePath).toString("base64");
         console.log("Imagen a base64:", Picture);
         instance.post("postUser", { PkData, CardNumberFormatted, Username, Email, Picture } ) //{ Connstring, Localquery }
@@ -64,4 +57,43 @@ async function postUser (PkData, CardNumberFormatted, Username, Email, PicturePa
         console.error(error.response);
     }
 };
-postUser(78, '0000:22078', 'Eight User', 'eight@user.com', 'C:/Users/HP/Downloads/userprofile3.jpg');
+//postUser(78, '0000:22078', 'Eight User', 'eight@user.com', 'C:/Users/HP/Downloads/userprofile3.jpg');
+
+async function putUser(PkData, CardNumberFormatted, Username, Email, PicturePath){
+    try{
+        console.log("Actualizando usuario...");
+
+        console.log(PkData + ", " + CardNumberFormatted + ", " + Username + ", " + Email + ", " + PicturePath);
+        const Picture = fs.readFileSync(PicturePath).toString("base64");
+        console.log("Imagen a base64:", Picture);
+
+        instance.put("PutUser", { PkData, CardNumberFormatted, Username, Email, Picture } )
+            .then(response => {
+                console.log(response.data);
+            })
+            .catch(error =>{
+                console.log("Error:", error);
+            });
+    }catch(error){
+        console.error(error.response);
+    }
+};
+//putUser(78, '0000:22078', 'Nine User', 'eight@user.com', 'C:/Users/HP/Downloads/userprofile3.jpg');
+
+async function deletUser(PkData) {
+    try{
+        console.log("Eliminando usuario...");
+        console.log("PkData:", PkData);
+        instance.delete("DeleteUser/" + PkData)
+            .then(response => {
+                console.log(response.data);
+            })
+            .catch(error =>{
+                console.log("Error:", error);
+            });
+
+    }catch(error){
+        console.error(error.response);
+    }   
+};
+deletUser(78);
