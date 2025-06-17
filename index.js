@@ -2,7 +2,10 @@ import axios from "axios";
 import https from "https";
 import fs from "fs";
 import path from "path";
+//var edge = require('edge.js');
+import edge from "edge-js";
 
+//----------------------    MÉTODO POR API REST
 const Connstring = "data source=c:\\Users\\HP\\Documents\\Angel\\SDG\\Sybase\\Data;ServerType=local;CharType=general_vfp_ci_as_1252;TableType=ADT;";
 const agent = new https.Agent({
     rejectUnauthorized: false
@@ -96,4 +99,100 @@ async function deletUser(PkData) {
         console.error(error.response);
     }   
 };
-deletUser(78);
+//deletUser(78);
+
+
+
+
+
+//----------------------    MÉTODO CON EDGE-JS
+const assemblyFile = 'C:\\Users\\HP\\Documents\\Angel\\SDG\\DataProvider\\SybaseDll\\SybaseDll\\bin\\Debug\\SybaseDll.dll';
+const typeName = 'SybaseDll.connection';
+
+const getUsersDll = edge.func({
+    assemblyFile: assemblyFile,
+    typeName: typeName,
+    methodName: 'GetUsers'
+});
+const payloadSelect = {
+    connStr: 'data source=c:\\Users\\HP\\Documents\\Angel\\SDG\\Sybase\\Data;ServerType=local;CharType=general_vfp_ci_as_1252;TableType=ADT;',
+    localquery: 'select PkData, CardNumberFormatted, UserName, Email, Picture from Card'
+};
+/*getUsersDll(payloadSelect, function(error, result) {
+    if (error) {
+        console.error('Error: ', error);
+    } else {
+        console.log('Result:', result);
+    }
+});*/
+
+const payloadSelectId = {
+    connStr: 'data source=c:\\Users\\HP\\Documents\\Angel\\SDG\\Sybase\\Data;ServerType=local;CharType=general_vfp_ci_as_1252;TableType=ADT;',
+    localquery: 'select PkData, CardNumberFormatted, UserName, Email, Picture from Card where PkData = 70'
+};
+getUsersDll(payloadSelectId, function(error, result) {
+    if (error) {
+        console.error('Error: ', error);
+    } else {
+        console.log('Result:', result);
+    }
+});
+
+
+const postUserDll = edge.func({
+    assemblyFile: assemblyFile,
+    typeName: typeName,
+    methodName: 'PostUser'
+});
+const payloadPost = {
+    PkData: 78,
+    CardNumberFormatted: '0000:22078',
+    Username: 'Eight User',
+    Email: 'eight@user.com',
+    Picture: fs.readFileSync('C:/Users/HP/Downloads/userprofile4.jpg').toString("base64"),
+};
+/*postUserDll(payloadPost, function(error, result) {
+    if (error) {
+        console.error('Error: ', error);
+    } else {
+        console.log('Result:', result);
+    }
+});*/
+
+
+const putUserDll = edge.func({
+    assemblyFile: assemblyFile,
+    typeName: typeName,
+    methodName: 'PutUser'
+});
+const payloadPut = {
+    PkData: 78,
+    CardNumberFormatted: '0000:22078',
+    Username: 'Nine User',
+    Email: 'eight@user.com',
+    Picture: fs.readFileSync('C:/Users/HP/Downloads/userprofile4.jpg').toString("base64"),
+};
+/*putUserDll(payloadPut, function(error, result) {
+    if (error) {
+        console.error('Error: ', error);
+    } else {
+        console.log('Result:', result);
+    }
+});*/
+
+
+const deleteUserDll = edge.func({
+    assemblyFile: assemblyFile,
+    typeName: typeName,
+    methodName: 'DeleteUser'
+});
+const payloadDelete = {
+    PkData: 78
+};
+/*deleteUserDll(payloadDelete, function(error, result) {
+    if (error) {
+        console.error('Error: ', error);
+    } else {
+        console.log('Result:', result);
+    }
+});*/
